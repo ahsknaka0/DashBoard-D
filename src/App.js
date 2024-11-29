@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import amisLogo from './amis2024.png';
+
 import FloatingButtons from "./component/FloatingButtons";
 import VCDashboard from "./component/VCdashboard";
 import Sidebar from "./component/Sidebar";
 import DashboardMetrics from "./component/DashboardMetrics";
 import images from "./constant/images";
+import TodaysEventAndBirthday from './component/TodaysEventAndBirthday';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -12,7 +15,9 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+  const [isBirthdayModalOpen, setIsBirthdayModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('upcoming');
+
   const handleNext = () => {
     setCurrentSlide((prev) => (prev + 1) % images.length);
   };
@@ -49,6 +54,26 @@ const App = () => {
   }, [darkMode]);
 
   useEffect(() => {
+    const modalData = JSON.parse(localStorage.getItem('birthdayModalData')) || {};
+    const currentDate = new Date().toDateString();
+    console.log(modalData); // Log modal data
+    console.log(currentDate); // Log current date
+  
+    if (modalData.date === currentDate && modalData.count >= 1000) {
+      setIsBirthdayModalOpen(false);
+    } else {
+      setIsBirthdayModalOpen(true);
+      localStorage.setItem(
+        'birthdayModalData',
+        JSON.stringify({
+          date: currentDate,
+          count: (modalData.date === currentDate ? modalData.count : 0) + 1,
+        })
+      );
+    }
+  }, []);
+  
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % eventImages.length);
     }, 3000);
@@ -62,116 +87,131 @@ const App = () => {
         <div className="hidden sm:block fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-md z-50">
           <Sidebar />
         </div>
-
         <div className="flex-1 sm:ml-16">
           {/* Main Content */}
           <nav className="w-full py-4 px-8 flex justify-between items-center bg-gray-200 dark:bg-gray-800 shadow-md">
-      <img src={amisLogo} alt="amislogo" className="h-9" />
-
-      
-
-
-      {/* Profile dropdown on larger screens */}
-      <div className="relative hidden sm:flex items-center">
-        {/* Button to toggle dark mode */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className="  hidden md:block px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-md shadow-md transition-transform hover:scale-105 mr-4"
-      >
-        {darkMode ? "Light Mode" : "Dark Mode"}
-      </button>
-        <span className="mr-4">Alex Murphy</span>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="relative">
-          <i className="fas fa-bell mr-4"></i> {/* Notification Bell */}
-        </button>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="relative">
-          <i className="fas fa-envelope mr-4"></i> {/* Messages Icon */}
-        </button>
-
-        {/* Dropdown menu for profile settings */}
-        {menuOpen && (
-          <div className="absolute right-0 top-4 mt-2 w-48 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
-            <ul className="p-2">
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Profile</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Settings</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Logout</li>
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Profile section on smaller screens */}
-      <div className="sm:hidden flex items-center">
-        <button onClick={() => setMenuOpen(!menuOpen)} className="text-xl font-semibold">
-          Alex Murphy
-        </button>
-
-        {/* Mobile Dropdown */}
-        {menuOpen && (
-          <div className="absolute right-0 top-12 mt-2 w-48 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
-            <ul className="p-2">
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Notification</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Messages</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Profile</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Settings</li>
-              <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer" onClick={() => setDarkMode(!darkMode)}>
+            <img src={images.AimsLogo} alt="amislogo" className="h-9" />
+            {/* Profile dropdown on larger screens */}
+            <div className="relative hidden sm:flex items-center">
+              {/* Button to toggle dark mode */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="  hidden md:block px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-md shadow-md transition-transform hover:scale-105 mr-4"
+              >
                 {darkMode ? "Light Mode" : "Dark Mode"}
-              </li>
-            </ul>
-          </div>
-        )}
-      </div>
-    </nav>
+              </button>
+              <span className="mr-4">Alex Murphy</span>
+              <button onClick={() => setMenuOpen(!menuOpen)} className="relative">
+                <i className="fas fa-bell mr-4"></i> {/* Notification Bell */}
+              </button>
+              <button onClick={() => setMenuOpen(!menuOpen)} className="relative">
+                <i className="fas fa-envelope mr-4"></i> {/* Messages Icon */}
+              </button>
 
-          <main className="flex-grow grid grid-cols-1 sm:grid-cols-4 gap-4 p-4">
-            {/* Carousel Section */}
-            <div
-              className="col-span-1 sm:col-span-3 bg-white dark:bg-gray-800 rounded-md shadow-md p-4 mb-0 h-full"
-              // style={{ height: "500px" }}
-            >
-              <h1 className="text-3xl font-bold mb-4">Upcoming Events</h1>
-              <div className="relative w-full h-full overflow-hidden rounded-md">
-                <div
-                  className="relative w-full h-full flex transition-transform duration-500"
-                  style={{
-                    transform: `translateX(-${currentSlide * 100}%)`,
-                  }}
-                >
-                  {eventImages.map((image, index) => (
-                    <div
-                    key={index}
-                    className={`relative min-w-full h-full transition-opacity duration-500 ${
-                      currentSlide === index ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                      <img
-                        src={image}
-                        alt={`Event ${index + 1}`}
-                        className="w-full xs:h-52 sm:h-64 md:h-96 object-center rounded-md"
-                      />
-                    </div>
-                  ))}
+              {/* Dropdown menu for profile settings */}
+              {menuOpen && (
+                <div className="absolute right-0 top-4 mt-4 w-48 bg-white dark:bg-gray-700 shadow-lg rounded-md z-50">
+                  <ul className="p-2">
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Profile</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Settings</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Logout</li>
+                  </ul>
                 </div>
-                {/* Previous and Next Buttons */}
+              )}
+            </div>
+
+            {/* Profile section on smaller screens */}
+            <div className="sm:hidden flex items-center">
+              <button onClick={() => setMenuOpen(!menuOpen)} className="text-lg font-semibold">
+                Alex Murphy
+              </button>
+
+              {/* Mobile Dropdown */}
+              {menuOpen && (
+                <div className="absolute right-0 top-12 mt-2 mr-2 w-48 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
+                  <ul className="p-2">
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Notification</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Messages</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Profile</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">Settings</li>
+                    <li className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer" onClick={() => setDarkMode(!darkMode)}>
+                      {darkMode ? "Light Mode" : "Dark Mode"}
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </nav>
+
+          <main className="flex-grow grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-3 gap-4 p-4">
+            {/* Tabs Section */}
+            <div className="col-span-1 md:col-span-4 sm:col-span-3 lg:col-span-2 bg-white dark:bg-gray-800 rounded-md shadow-md p-4 mb-0">
+              <div className="flex space-x-4 mb-4">
                 <button
-                  onClick={handlePrevious}
-                  className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-200"
+                  className={`px-4 py-2 rounded-md ${activeTab === 'upcoming' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'}`}
+                  onClick={() => setActiveTab('upcoming')}
                 >
-                  &#9664;
+                  Upcoming Events
                 </button>
                 <button
-                  onClick={handleNext}
-                  className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-200"
+                  className={`px-4 py-2 rounded-md ${activeTab === 'today' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'}`}
+                  onClick={() => setActiveTab('today')}
                 >
-                  &#9654;
+                  Today's Event
                 </button>
               </div>
+
+              {activeTab === 'upcoming' && (
+                <div>
+                  <h1 className="text-3xl font-bold mb-4">Upcoming Events</h1>
+                  <div className="relative w-full h-full overflow-hidden rounded-md">
+                    <div
+                      className="relative w-full h-full flex transition-transform duration-500"
+                      style={{
+                        transform: `translateX(-${currentSlide * 100}%)`,
+                      }}
+                    >
+                      {eventImages.map((image, index) => (
+                        <div
+                          key={index}
+                          className={`relative min-w-full h-full transition-opacity duration-500 ${currentSlide === index ? 'opacity-100' : 'opacity-0'}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Event ${index + 1}`}
+                            className="w-full xs:h-52 sm:h-64 md:h-96 object-center rounded-md"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={handlePrevious}
+                      className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-200"
+                    >
+                      &#9664;
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-200"
+                    >
+                      &#9654;
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'today' && (
+                <TodaysEventAndBirthday
+                  isOpen={true}
+                  onClose={() => setIsBirthdayModalOpen(false)}
+                />
+              )}
             </div>
 
             {/* Notification Section */}
             <div
-              className="col-span-1 bg-white dark:bg-gray-800 rounded-md shadow-md p-4 mb-0"
-              style={{ height: "500px" }}
+              className="col-span-1 md:col-span-4 lg:col-span-1 bg-white dark:bg-gray-800 rounded-md shadow-md p-4 mb-0"
+              style={{ height: "525px" }}
             >
               <h2 className="text-xl font-bold mb-4 sticky top-0 bg-white dark:bg-gray-800 z-10 p-2">
                 Notifications
@@ -190,8 +230,8 @@ const App = () => {
                 ))}
               </ul>
             </div>
-
           </main>
+
 
           <DashboardMetrics />
 
@@ -203,8 +243,20 @@ const App = () => {
           <footer className="w-full py-4 bg-gray-300 dark:bg-gray-700 text-center text-sm">
             © 2024 Dashboard. All rights reserved.
           </footer>
+          <button onClick={() => setIsBirthdayModalOpen(true)}>Test Open Modal</button>
+
+          {isBirthdayModalOpen && (
+  <TodaysEventAndBirthday
+    isOpen={isBirthdayModalOpen}
+    onClose={() => setIsBirthdayModalOpen(false)}
+  />
+)}
+
+
+
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

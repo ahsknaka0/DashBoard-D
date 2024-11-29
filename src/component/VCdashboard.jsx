@@ -42,17 +42,17 @@ const VCDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
         {/* Enrollment Overview */}
         <div className="bg-white dark:bg-gray-800 p-4 shadow-md rounded-md">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          University vs College Fees
-        </h1>
+          <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            University vs College Fees
+          </h1>
           <Columnwithdrilldown />
         </div>
 
         {/* Financial Insights */}
         <div className="bg-white dark:bg-gray-800 p-4 shadow-md rounded-md">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          University vs Courses
-        </h1>
+          <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            University vs Courses
+          </h1>
           <Piewithdrilldown />
         </div>
 

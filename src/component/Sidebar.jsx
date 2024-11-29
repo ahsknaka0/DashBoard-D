@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { FaHome, FaUniversity, FaUsers, FaMoneyBill, FaBriefcase } from "react-icons/fa";
+// import images from "../constant/images";
 import Modal from "./Modal";
 
+// Menu Item Component
 const MenuItem = ({ Icon, label, onClick }) => (
   <div
     className="flex items-center space-x-4 p-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md transition-all duration-300"
@@ -12,6 +14,7 @@ const MenuItem = ({ Icon, label, onClick }) => (
   </div>
 );
 
+// Sidebar Component
 const Sidebar = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -32,6 +35,7 @@ const Sidebar = () => {
     setModalOpen(true); // Open the modal
   };
 
+
   const getFiltersForModal = (modalType) => {
     // Define filters based on modalType
     switch (modalType) {
@@ -50,9 +54,6 @@ const Sidebar = () => {
     }
   };
 
-  const closeModal = () => {
-    setModalOpen(false); // Close the modal
-  };
 
   return (
     <>
@@ -60,6 +61,10 @@ const Sidebar = () => {
       <div className="z-50 group relative w-16 bg-gray-200 dark:bg-gray-800 h-screen flex-shrink-0 transition-all duration-300">
         <div className="absolute left-0 top-0 h-full w-16 group-hover:w-64 bg-gray-200 dark:bg-gray-800 shadow-lg overflow-hidden transition-all duration-300">
           <div className="flex flex-col items-center group-hover:items-start p-4">
+            {/* Logo Section - Hide on small screens */}
+            {/* <div className="hidden sm:block mb-6">
+            <img src={images.AimsLogo} alt="amislogo" className="h-9" />
+            </div> */}
             <div className="mb-6">
               <h1 className="text-lg font-bold text-center group-hover:text-left">Menu</h1>
             </div>
@@ -82,7 +87,6 @@ const Sidebar = () => {
         <Modal
           modalType={modalType}
           filters={filters}
-          closeModal={closeModal}
         />
       )}
     </>
